@@ -1,0 +1,17 @@
+--type-set=drupal=.module,.php,.inc,.theme,.include,.info,.install
+--type-set=sass=.sass
+--type-set=scss=.scss
+--type-set=conf=.conf,.cfg,.default,.local,.ini,.cnf,vimrc,bashrc,.allow,.deny,hosts
+--type-set=varnish=.vcl
+--type-add=ruby=.haml,.rake,.rsel,.sass,.thor,.erb,Gemfile
+--type-add=js=.javascript
+--ignore-dir=target/
+--ignore-dir=log
+--ignore-dir=tmp
+--ignore-dir=db
+--ignore-dir=doc
+--ignore-dir=coverage
+--ignore-dir=cache
+--ignore-dir=files
+--ignore-dir=data_migration
+--ignore-dir=database
