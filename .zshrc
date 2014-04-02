@@ -36,13 +36,12 @@ plugins=(git happymarkers golang)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
-export PATH="/Users/james/.rvm/bin:$PATH"
-export PATH="/usr/local/bin:$PATH"
 export PATH="/sbin:$PATH"
 export PATH="/usr/sbin:$PATH"
 export PATH="/bin:$PATH"
 export PATH="/usr/bin:$PATH"
-export PATH="/Users/james/Code/Projects/DrupalGenerator:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export PATH="/Users/james/.rvm/bin:$PATH"
 export PATH="/Users/james/bin:$PATH"
 # # export PATH="/Applications/MAMP/Library/bin:$PATH"
 # # export PATH="/Applications/MAMP/bin/php5.3/bin:$PATH"
@@ -50,8 +49,6 @@ export PATH="/Users/james/bin:$PATH"
 # export PATH="/Applications/MNPP/Library/php53/bin:$PATH"
 # export PATH="/Applications/MNPP/Library/mysql/bin:$PATH"
 # export PATH="/usr/local/cuda/bin:$PATH"
-export PATH="/opt/local/sbin:$PATH"
-export PATH="/opt/local/bin:$PATH"
 
 # Python shell tab complete
 export PYTHONSTARTUP=~/.pythonrc
@@ -120,7 +117,7 @@ alias mmv='noglob zmv -W'
 
 # Virtualenwrapper
 export WORKON_HOME=~/.virtualenvs
-source /opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper.sh
+source /usr/local/bin/virtualenvwrapper.sh
 export PIP_VIRTUALENV_BASE=~/.virtualenvs
 
 # Go
