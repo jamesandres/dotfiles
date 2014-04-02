@@ -1,0 +1,14 @@
+#!/bin/bash
+# Helper script for crushing all images in a directory
+#
+# By:    James Andres
+# Usage: pngcrush-all PATH
+
+cd ${1:.}
+pwd
+
+for i in $(ls *.png); do
+  echo "Crushing $i"
+  pngcrush -reduce -brute -l 9 $i $i.crushed
+  mv $i.crushed $i
+done

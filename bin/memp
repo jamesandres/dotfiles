@@ -1,0 +1,125 @@
+#!/usr/bin/env ruby -w
+
+COMMANDS = ['stop', 'start', 'restart', 'status']
+
+SERVICES = {
+  'nginx'          => 'org.macports.nginx',
+  'php53-fpm'      => 'org.macports.php53-fpm',
+  'mysql55-server' => 'org.macports.mysql55-server',
+  'memcached'      => 'org.macports.memcached',
+  'mongodb'        => 'org.macports.mongodb',
+}
+
+LAUNCHDAEMONS = '/opt/local/etc/LaunchDaemons'
+
+USAGE = "Usage: memp [#{SERVICES.keys.join('|')}] (#{COMMANDS.join('|')})"
+
+
+#
+# Returns the PID of the service if it is running. False otherwise.
+#
+def launchdaemon_path(service_org)
+  File.join(LAUNCHDAEMONS, service_org, service_org + '.plist')
+end
+
+def service_is_running?(service_org)
+  result = `sudo launchctl list | grep #{service_org}`
+
+  matches = result.match(/^[0-9]+/)
+
+  if matches.nil?
+    false
+  else
+    matches[0]
+  end
+end
+
+def service_wait_until(service_org, wait_until)
+  begin
+    pid = service_is_running?(service_org)
+
+    waiting = false
+
+    if wait_until == 'stopped' && pid
+      waiting = true
+    elsif wait_until == 'started' && !pid
+      waiting = true
+    end
+  end while waiting && sleep(0.1)
+end
+
+def service_stop(service_org)
+  # if service_is_running?(service_org)
+    puts "Stopping #{service_org}.."
+    `sudo launchctl unload #{launchdaemon_path(service_org)}`
+  # else
+  #   puts "Cannot stop #{service_org}, it's not running."
+  # end
+end
+
+def service_start(service_org)
+  # if !service_is_running?(service_org)
+    puts "Starting #{service_org}.."
+    `sudo launchctl load #{launchdaemon_path(service_org)}`
+  # else
+  #   puts "Not starting #{service_org}, it's already running."
+  # end
+end
+
+def service_restart(service_org)
+  service_stop(service_org)
+  service_wait_until(service_org, 'stopped')
+  service_start(service_org)
+end
+
+def service_status(service_org)
+  status = service_is_running?(service_org) ? 'RUNNING' : 'STOPPED'
+  puts "#{service_org}: #{status}"
+end
+
+def service(command, service)
+  service_org = SERVICES[service]
+
+  case command
+  when 'stop'
+    service_stop(service_org)
+  when 'start'
+    service_start(service_org)
+  when 'restart'
+    service_restart(service_org)
+  when 'status'
+    service_status(service_org)
+  end
+end
+
+
+#
+# Main operations
+#
+if ARGV.length == 0
+  puts USAGE
+  exit 0
+end
+
+if ARGV.length == 1
+  if !COMMANDS.include?(ARGV[0])
+    puts "ERROR, #{ARGV[0]} is not a valid command."
+    exit 1
+  else
+    SERVICES.each do |service, service_org|
+      service(ARGV[0], service)
+    end
+  end
+end
+
+if ARGV.length > 1
+  if !SERVICES.include?(ARGV[0])
+    puts "ERROR, #{ARGV[0]} is not a valid service."
+    exit 1
+  elsif !COMMANDS.include?(ARGV[1])
+    puts "ERROR, #{ARGV[1]} is not a valid command."
+    exit 1
+  else
+    service(ARGV[1], ARGV[0])
+  end
+end

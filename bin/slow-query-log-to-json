@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+if !ARGV[0]
+  puts "Usage: slow-query-log-to-json FILE"
+  exit 0
+end
+
+data = []
+query = nil
+
+File.open(ARGV[0]).each do |line|
+  line.chomp!
+
+  is_header = line =~ /^#/
+
+  if is_header && line =~ /^# User/
+    if !query.nil?
+      data << query
+    end
+    query = {}
+  elsif is_header
+    line.match(/^# (.*)$/)[1].split('  ').each do |info|
+      key, value = info.split(': ')
+      query[key] = value
+    end
+  else
+    if query['query'].nil?
+      query['query'] = ''
+    end
+    query['query'] << line + "\n"
+  end
+end
+
+if !query.nil?
+  data << query
+end
+
+data.sort_by! { |h| -h["Query_time"].to_f }
+
+puts data.to_json

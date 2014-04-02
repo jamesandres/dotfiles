@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+stack = []
+start_matching = false
+
+subdir = ARGV[0] || '.'
+reporoot = `cd #{subdir}; git rev-parse --show-toplevel`.strip!
+
+`git status --porcelain #{ARGV[0] || '.'}`.split("\n").each do |line|
+  staged, unstaged = line[0..1].split('')
+  file             = line[2..(line.length - 1)].strip
+
+  puts file
+
+  staged.strip!
+  unstaged.strip!
+
+  next if staged != ''
+  next if unstaged != 'D'
+
+  stack << file
+
+  if stack.length % 100 == 0
+    puts `cd #{reporoot}; git rm #{stack.join(' ')}`
+    stack = []
+  end
+end
+
+if !stack.empty?
+  puts `cd #{reporoot}; git rm #{stack.join(' ')}`
+end  

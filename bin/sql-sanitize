@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# 1. Disable email addresses
+# 2. Set passwords to user names
+$(drush sql-connect $@) -e 'UPDATE users SET mail = CONCAT(mail, ".disabled"), pass = MD5(name) WHERE uid > 0;'

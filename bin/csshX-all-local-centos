@@ -1,0 +1,2 @@
+#!/bin/bash
+csshX centos-lb.local centos-web1.local centos-web2.local centos-db1.local

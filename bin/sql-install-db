@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'highline/import'
+require 'escape'
+
+if ARGV.length < 1
+  puts "Usage: sql-install-db [--no-sanitize] SQLDUMPFILE"
+  exit 0
+end
+
+sanitize = !ARGV.include?('--no-sanitize')
+
+file = ARGV.last
+ext  = file[/\.(sql|sql\.gz|sql\.bz2)$/]
+
+if ext.nil? || !ext
+  puts "Error invalid SQL dump format.  Valid file extensions are: *.sql, *.sql.gz, *.sql.bz2."
+  exit 1
+end
+
+info = `drush sql-connect`.strip
+if info.nil? || !info
+  puts "This does not appear to be a Drupal site. (eg: drush is not working here)"
+  exit 2
+end
+
+db_name = info.match(/--database=([^ ]+)/)[1] rescue nil
+
+if !db_name.nil? && agree("Are you sure you want to destroy '#{db_name}' and replace it with the contents of '#{file}'?")
+  puts `drush sql-drop -y`
+
+  prog = 'cat'
+  prog = 'gzcat' if ext == '.sql.gz'
+  prog = 'bzcat' if ext == '.sql.bz2'
+
+  file_esc = Escape.shell_command([file])
+  puts `#{prog} #{file_esc} | $(drush sql-connect)`
+
+  if sanitize
+    puts `sql-sanitize`
+  end
+else 
+  puts "An error occurred, probably couldn't run 'drush sql-connect' properly."
+  exit 10
+end

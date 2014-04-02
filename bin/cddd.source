@@ -1,0 +1,5 @@
+cd $(ruby -e "if ARGV[0].gsub('.', '') == ''
+  num_dot_groups = (ARGV[0].length / 2).to_i
+  ARGV[0] = Array.new(num_dot_groups, '..').join('/')
+end
+puts ARGV.join(' ')" $@)

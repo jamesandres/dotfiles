@@ -1,0 +1,6 @@
+#!/bin/bash
+sudo /Applications/MAMP/bin/stopMysql.sh
+echo "Stopping .."
+sleep 3
+sudo /Applications/MAMP/bin/startMysql.sh
+echo "Started .."
